@@ -1,57 +1,56 @@
-import { galleryItems } from './gallery-items.js';
+import { galleryItems } from "./gallery-items.js";
 // Change code below this line
-import * as basicLightbox from "basiclightbox";
 
-const listGallery = document.querySelector('.gallery')
+const listGallery = document.querySelector(".gallery");
 
-// const liItems = galleryItems.forEach(({ preview, description, original }) => {
-//     const liItem = basicLightbox.create(`
-//     <li class="gallery__item">
-//         <a class="gallery__link" href="${original}">
-//             <img class="gallery__image"
-//                 src="${preview}"
-//                 data-source="${original}"
-//                 alt="${description}">
-//         </a>
-//     </li>
-// `)
-// }).join('')
+galleryItems.forEach(({ preview, description, original }) => {
+  const liItem = document.createElement("li");
+  const imgItem = document.createElement("img");
+  const imgOriginalLink = document.createElement("a");
 
-galleryItems.forEach(({preview, description, original}) => {
-    const liItem = document.createElement("li");
-    const imgItem = document.createElement("img");
-    const imgOriginalLink = document.createElement('a')
+  liItem.classList.add("gallery__item");
+  imgItem.classList.add("gallery__image");
+  imgOriginalLink.classList.add("gallery__link");
 
-    liItem.classList.add("gallery__item");
-    imgItem.classList.add("gallery__image");
-    imgOriginalLink.classList.add("gallery__link");
+  imgOriginalLink.href = original;
+  imgItem.src = preview;
+  imgItem.alt = description;
+  imgItem.dataset.source = original;
 
-    imgOriginalLink.href = original;
-    imgItem.src = preview
-    imgItem.alt = description
-    imgItem.dataset.source = original
-
-    liItem.append(imgOriginalLink);
-    imgOriginalLink.append(imgItem);
-    listGallery.append(liItem);
-
+  liItem.append(imgOriginalLink);
+  imgOriginalLink.append(imgItem);
+  listGallery.append(liItem);
 });
 
-listGallery.addEventListener('click', onImgClick)
+listGallery.addEventListener("click", onImgClick);
+
+
 
 function onImgClick(evt) {
-    evt.preventDefault();
+  evt.preventDefault();
 
-    const urlOriginal = evt.target.dataset.source
+  const urlOriginal = evt.target.dataset.source;
 
-    evt.target.src = urlOriginal;
+  const instance = basicLightbox.create(
+    `<img src="${urlOriginal}" width="800" height="600">`
+  );
 
-    console.log(urlOriginal);
-    console.dir(evt.target);
+  window.addEventListener("keydown", onEscClick);
 
-    const instance = basicLightbox.create(evt.target);
+  // evt.target.src = urlOriginal;
+  // const instance = basicLightbox.create(evt.target); !!!Чому так не працює? Я ж передаю по суті той самий вузол з посиланням на оригінальне фото.
 
+  instance.show();
 
-    instance.show;
 }
 
+function onEscClick(evt) {
+  if (document.body.lastChild && evt.key === "Escape") {
+    document.body.lastChild.classList.remove(
+      "basicLightbox",
+      "basicLightbox--img",
+      "basicLightbox--visible"
+    );
+    window.removeEventListener("keydown", onEscClick);
+  }
+}
